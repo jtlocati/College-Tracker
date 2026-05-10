@@ -1,7 +1,338 @@
 {% extends 'Tracker/Layout.html' %}
 
-{% block title %}Login - Match Map{% endblock %}
+{% block title %}My Profile - Match Map{% endblock %}
 
 {% block main %}
 
+<!--IM SORRY FOR NOT BEING OPTIMAL :( (This goes for my model design to ;)-->
+<div class="profile-main">
+    <div class="profile-card">
+        <h2 class="profile-title">My Profile</h2>
+        <p class="profile-subtitle">Logged in as <strong>{{ user.username }}</strong></p>
+
+        <form method="post" action="{% url 'Tracker:UserProfile' %}" id="profile-form">
+            {% csrf_token %}
+
+            {% if form.non_field_errors %}
+                <div class="form-error">{{ form.non_field_errors }}</div>
+            {% endif %}
+
+            <!-- Geographic -->
+            <section class="profile-section">
+                <h3 class="section-title">Where are you from?</h3>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="{{ form.State.id_for_label }}">State</label>
+                        {{ form.State }}
+                        {% if form.State.errors %}<small class="field-error">{{ form.State.errors|join:" " }}</small>{% endif %}
+                    </div>
+                    <div class="form-group">
+                        <label for="{{ form.City.id_for_label }}">City</label>
+                        {{ form.City }}
+                        {% if form.City.errors %}<small class="field-error">{{ form.City.errors|join:" " }}</small>{% endif %}
+                    </div>
+                    <div class="form-group form-group-wide">
+                        <label for="{{ form.School.id_for_label }}">High School</label>
+                        {{ form.School }}
+                        {% if form.School.errors %}<small class="field-error">{{ form.School.errors|join:" " }}</small>{% endif %}
+                    </div>
+                </div>
+            </section>
+
+            <!-- GPA -->
+            <section class="profile-section">
+                <h3 class="section-title">GPA</h3>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="{{ form.OverallGPAUW.id_for_label }}">Overall GPA Unweighted</label>
+                        {{ form.OverallGPAUW }}
+                    </div>
+                    <div class="form-group">
+                        <label for="{{ form.OverallGPAW.id_for_label }}">Overall GPA Weighted</label>
+                        {{ form.OverallGPAW }}
+                    </div>
+                </div>
+                <h4 class="subsection-title">Per Year (Unweighted / Weighted)</h4>
+                <div class="form-grid form-grid-pairs">
+                    <div class="form-group">
+                        <label for="{{ form.FreshGPAUW.id_for_label }}">Freshman UW</label>
+                        {{ form.FreshGPAUW }}
+                    </div>
+                    <div class="form-group">
+                        <label for="{{ form.FreshGPAU.id_for_label }}">Freshman W</label>
+                        {{ form.FreshGPAU }}
+                    </div>
+                    <div class="form-group">
+                        <label for="{{ form.SophGPAUW.id_for_label }}">Sophomore UW</label>
+                        {{ form.SophGPAUW }}
+                    </div>
+                    <div class="form-group">
+                        <label for="{{ form.SophGPAW.id_for_label }}">Sophomore W</label>
+                        {{ form.SophGPAW }}
+                    </div>
+                    <div class="form-group">
+                        <label for="{{ form.JunGPAUW.id_for_label }}">Junior UW</label>
+                        {{ form.JunGPAUW }}
+                    </div>
+                    <div class="form-group">
+                        <label for="{{ form.JunGPAW.id_for_label }}">Junior W</label>
+                        {{ form.JunGPAW }}
+                    </div>
+                    <div class="form-group">
+                        <label for="{{ form.SenGPAUW.id_for_label }}">Senior UW</label>
+                        {{ form.SenGPAUW }}
+                    </div>
+                    <div class="form-group">
+                        <label for="{{ form.SenGPAW.id_for_label }}">Senior W</label>
+                        {{ form.SenGPAW }}
+                    </div>
+                </div>
+            </section>
+
+            <!-- Standardized Tests -->
+            <section class="profile-section">
+                <h3 class="section-title">Standardized Tests</h3>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="{{ form.SAT.id_for_label }}">SAT</label>
+                        {{ form.SAT }}
+                    </div>
+                    <div class="form-group">
+                        <label for="{{ form.ACT.id_for_label }}">ACT</label>
+                        {{ form.ACT }}
+                    </div>
+                </div>
+            </section>
+
+            <!-- AP Exams (formset) -->
+            <section class="profile-section">
+                <h3 class="section-title">AP Exams</h3>
+                <p class="section-help">Click "Add Exam" for each AP test you've taken.</p>
+
+                {{ formset.management_form }}
+
+                {% if formset.non_form_errors %}
+                    <div class="form-error">{{ formset.non_form_errors }}</div>
+                {% endif %}
+
+                <div class="ap-formset" id="ap-formset">
+                    {% for ap_form in formset %}
+                        <div class="ap-row">
+                            {{ ap_form.id }}
+                            <div class="form-group ap-exam">
+                                <label>Exam</label>
+                                {{ ap_form.exam_name }}
+                            </div>
+                            <div class="form-group ap-score">
+                                <label>Score</label>
+                                {{ ap_form.score }}
+                            </div>
+                            {% if ap_form.instance.pk %}
+                                <div class="form-group ap-delete">
+                                    <label>{{ ap_form.DELETE }} Delete</label>
+                                </div>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                </div>
+
+                <button type="button" class="ap-add-button" id="add-ap-exam">+ Add Exam</button>
+
+                <!-- Hidden template for new dynamically-added rows. JS clones this and swaps __prefix__ for the next index. -->
+                <template id="ap-empty-form">
+                    <div class="ap-row">
+                        <div class="form-group ap-exam">
+                            <label>Exam</label>
+                            {{ formset.empty_form.exam_name }}
+                        </div>
+                        <div class="form-group ap-score">
+                            <label>Score</label>
+                            {{ formset.empty_form.score }}
+                        </div>
+                        <button type="button" class="ap-remove-new" aria-label="Remove">&times;</button>
+                    </div>
+                </template>
+            </section>
+
+            <!-- Activities -->
+            <section class="profile-section">
+                <h3 class="section-title">Activities</h3>
+                <p class="section-help">Up to 10 extracurricular activities, in order of importance.</p>
+
+                <div class="activity-list">
+                    <div class="activity-row">
+                        <div class="form-group activity-name"><label>Activity 1</label>{{ form.Activity1 }}</div>
+                        <div class="form-group activity-desc"><label>Description</label>{{ form.Description1 }}</div>
+                    </div>
+                    <div class="activity-row">
+                        <div class="form-group activity-name"><label>Activity 2</label>{{ form.Activity2 }}</div>
+                        <div class="form-group activity-desc"><label>Description</label>{{ form.Description2 }}</div>
+                    </div>
+                    <div class="activity-row">
+                        <div class="form-group activity-name"><label>Activity 3</label>{{ form.Activity3 }}</div>
+                        <div class="form-group activity-desc"><label>Description</label>{{ form.Description3 }}</div>
+                    </div>
+                    <div class="activity-row">
+                        <div class="form-group activity-name"><label>Activity 4</label>{{ form.Activity4 }}</div>
+                        <div class="form-group activity-desc"><label>Description</label>{{ form.Description4 }}</div>
+                    </div>
+                    <div class="activity-row">
+                        <div class="form-group activity-name"><label>Activity 5</label>{{ form.Activity5 }}</div>
+                        <div class="form-group activity-desc"><label>Description</label>{{ form.Description5 }}</div>
+                    </div>
+                    <div class="activity-row">
+                        <div class="form-group activity-name"><label>Activity 6</label>{{ form.Activity6 }}</div>
+                        <div class="form-group activity-desc"><label>Description</label>{{ form.Description6 }}</div>
+                    </div>
+                    <div class="activity-row">
+                        <div class="form-group activity-name"><label>Activity 7</label>{{ form.Activity7 }}</div>
+                        <div class="form-group activity-desc"><label>Description</label>{{ form.Description7 }}</div>
+                    </div>
+                    <div class="activity-row">
+                        <div class="form-group activity-name"><label>Activity 8</label>{{ form.Activity8 }}</div>
+                        <div class="form-group activity-desc"><label>Description</label>{{ form.Description8 }}</div>
+                    </div>
+                    <div class="activity-row">
+                        <div class="form-group activity-name"><label>Activity 9</label>{{ form.Activity9 }}</div>
+                        <div class="form-group activity-desc"><label>Description</label>{{ form.Description9 }}</div>
+                    </div>
+                    <div class="activity-row">
+                        <div class="form-group activity-name"><label>Activity 10</label>{{ form.Activity10 }}</div>
+                        <div class="form-group activity-desc"><label>Description</label>{{ form.Description10 }}</div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="profile-section" action="{% url 'Tracker:UserProfile' %}">
+                <h3 class="section-title">Awards</h3>
+                <p class="section-help">List current awards</p>
+
+                <div class="form-group">
+                    <label for="{{ form.Award1.id_for_label }}">Award 1</label>
+                    {{ form.Award1 }}
+                </div>
+                <div class="form-group">
+                    <label for="{{ form.Award2.id_for_label }}">Award 2</label>
+                    {{ form.Award2 }}
+                </div>
+                <div class="form-group">
+                    <label for="{{ form.Award3.id_for_label }}">Award 3</label>
+                    {{ form.Award3 }}
+                </div>
+                <div class="form-group">
+                    <label for="{{ form.Award4.id_for_label }}">Award 4</label>
+                    {{ form.Award4 }}
+                </div>
+                <div class="form-group">
+                    <label for="{{ form.Award5.id_for_label }}">Award 5</label>
+                    {{ form.Award5 }}
+                </div>
+            </section>
+
+            <!-- Letters of Rec -->
+            <section class="profile-section">
+                <h3 class="section-title">Letters of Recommendation</h3>
+                <p class="section-help">Up to 4 letters, leave blank if you currently have fewer</p>
+                <div class="form-grid form-grid-pairs">
+                    <div class="form-group">
+                        <label for="{{ form.Teacher1.id_for_label }}">Teacher 1</label>
+                        {{ form.Teacher1 }}
+                    </div>
+                    <div class="form-group">
+                        <label for="{{ form.Teacher2.id_for_label }}">Teacher 2</label>
+                        {{ form.Teacher2 }}
+                    </div>
+                    <div class="form-group">
+                        <label for="{{ form.Teacher3.id_for_label }}">Teacher 3</label>
+                        {{ form.Teacher3 }}
+                    </div>
+                    <div class="form-group">
+                        <label for="{{ form.Teacher4.id_for_label }}">Teacher 4</label>
+                        {{ form.Teacher4 }}
+                    </div>
+                </div>
+            </section>
+
+            <section class="profile-section">
+                <h3 class="section-title">Intended major</h3>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="{{ form.major.id_for_label }}"></label>
+                        {{ form.major }}
+                    </div>
+            </section>
+
+            <section class="profile-section">
+                <h3 class="section-title">Describe your ideal college enviorment</h3>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="{{ form.pref_area.id_for_label }}"></label>
+                        {{ form.pref_area }}
+                    </div>
+                </section>
+
+            <section class="profile-section">
+                <h3 class="section-title">Tell us more</h3>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="{{ form.note.id_for_label }}">Background, hostory, ect.</label>
+                        {{ form.note }}
+                    </div>
+            </section>
+
+            <button type="submit" class="login-button profile-save">Save Profile</button>
+        </form>
+    </div>
+</div>
+
+<!-- Loading overlay shown while Accepto generates the summary -->
+<div class="loading-overlay" id="loading-overlay" aria-hidden="true">
+    <div class="loading-card">
+        <div class="loading-spinner"></div>
+        <h2 class="loading-title">Accepto Unit-01 is reviewing your profile...</h2>
+        <p class="loading-subtitle">Hang on! this usually takes a few seconds.</p>
+    </div>
+</div>
+
+<script>
+(function () {
+    const prefix = "{{ formset.prefix }}";
+    const totalFormsInput = document.querySelector('input[name="' + prefix + '-TOTAL_FORMS"]');
+    const formsetEl = document.getElementById('ap-formset');
+    const addBtn = document.getElementById('add-ap-exam');
+    const template = document.getElementById('ap-empty-form');
+
+    if (!totalFormsInput || !formsetEl || !addBtn || !template) return;
+
+    addBtn.addEventListener('click', function () {
+        const idx = parseInt(totalFormsInput.value, 10);
+        // Clone the template content, swap __prefix__ for the new index.
+        const html = template.innerHTML.replace(/__prefix__/g, idx);
+        const wrapper = document.createElement('div');
+        wrapper.innerHTML = html.trim();
+        formsetEl.appendChild(wrapper.firstElementChild);
+        totalFormsInput.value = idx + 1;
+    });
+
+    formsetEl.addEventListener('click', function (e) {
+        if (e.target.classList.contains('ap-remove-new')) {
+            const row = e.target.closest('.ap-row');
+            row.querySelectorAll('input, select').forEach(function (el) {
+                if (el.type !== 'hidden') el.value = '';
+            });
+            row.style.display = 'none';
+        }
+    });
+
+    const profileForm = document.getElementById('profile-form');
+    const loadingOverlay = document.getElementById('loading-overlay');
+
+    if (profileForm && loadingOverlay) {
+        profileForm.addEventListener('submit', function () {
+            loadingOverlay.classList.add('visible');
+            loadingOverlay.setAttribute('aria-hidden', 'false');
+        });
+    }
+})();
+</script>
 {% endblock %}

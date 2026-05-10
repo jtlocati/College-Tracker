@@ -1,0 +1,29 @@
+{% extends "Tracker/Layout.html" %}
+
+{% block title %} home {% endblock %}
+
+{% block main %}
+{% load static %}
+
+{% load static %}
+
+<div class="modal-overlay" id="accepto-modal">
+    <div class="modal-card">
+        <a href="{% url 'Tracker:home' %}" class="modal-close" aria-label="Close">&times;</a>
+
+        <img src="{% static 'Tracker/logoWAVING.png' %}" alt="Accepto" class="modal-logo">
+
+        <h2 class="modal-title">Accepto Unit-01 is generating a summary of your profile....</h2>
+
+        <div class="modal-content">
+            {{ Accepto_Responce }}
+        </div>
+
+        <div class="modal-actions">
+            <a href="#" class="modal-button modal-button-primary">Let Accepto generate me my college list</a>
+            <a href="#" class="modal-button modal-button-secondary">Manually pick colleges</a>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
