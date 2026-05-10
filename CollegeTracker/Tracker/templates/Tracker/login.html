@@ -1,15 +1,19 @@
-{% extends "Tracker/Layout.html" %}
+{% extends 'Tracker/Layout.html' %}
 
-{% block title %} Home {% endblock %}
+{% block title %}Login - Match Map{% endblock %}
 
-{% block main %} 
-{% load static %}
+{% block main %}
 <div class="login-main">
     <div class="login-card">
         <h2 class="login-title">Sign In</h2>
 
-        <form class="login-form" action="#" method="post">
+        {% if error %}
+            <p class="form-error">{{ error }}</p>
+        {% endif %}
+
+        <form class="login-form" action="{% url 'Tracker:login_view' %}" method="post">
             {% csrf_token %}
+
             <div class="form-group">
                 <label for="username">Username</label>
                 <input type="text" id="username" name="username" placeholder="Enter your username" required>
@@ -29,5 +33,4 @@
         </p>
     </div>
 </div>
-
 {% endblock %}

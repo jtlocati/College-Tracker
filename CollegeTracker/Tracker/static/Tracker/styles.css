@@ -246,3 +246,23 @@ body {
 .signup-link:hover {
     text-decoration: underline;
 }
+
+.form-error {
+    background-color: #fdecea;
+    color: #b71c1c;
+    padding: 0.6rem 0.85rem;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+}
+
+.field-error {
+    color: #b71c1c;
+    font-size: 0.8rem;
+}
+
+.field-help {
+    color: #666;
+    font-size: 0.8rem;
+    line-height: 1.3;
+}
