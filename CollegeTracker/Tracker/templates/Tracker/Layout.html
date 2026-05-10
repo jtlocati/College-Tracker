@@ -1,0 +1,54 @@
+{% load static %}
+<html lang="en">
+    <head>
+        <title>{% block title %} {% endblock %}</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link href="{% static 'Tracker/styles.css' %}" rel="stylesheet">        
+    </head>
+    <body>
+        <header class="header">
+            <div class="logo-placeholder">LOGO</div>
+            <h1 class="app-name">Match Map</h1>
+        </header>
+
+        <main>
+            {% block main %} {% endblock %}
+        </main>
+
+        <footer class="footer">
+            <!-- Left: Made by section -->
+        <div class="footer-left">
+            <span class="made-by">Made by Jet Locati</span>
+            <a href="https://github.com/jtlocati" class="footer-link" target="_blank" rel="noopener noreferrer">
+                <img src="github-icon.jpg" alt="GitHub" class="icon">
+                github.com/jtlocati
+            </a>
+            <a href="https://www.linkedin.com/in/jet-locati-ab2b11333/" class="footer-link" target="_blank" rel="noopener noreferrer">
+                <img src="linkedin-icon.jpg" alt="LinkedIn" class="icon">
+                linkedin.com/in/jet-locati
+            </a>
+        </div>
+
+        <!-- Right: Contact and social media -->
+        <div class="footer-right">
+            <h3>Questions?</h3>
+            <p>Contact us at: <a href="mailto:contact@matchmap.com">contact@matchmap.com</a></p>
+            <h3>Follow Us</h3>
+            <div class="social-links">
+                <a href="#" target="_blank" rel="noopener noreferrer" aria-label="Twitter">
+                    <img src="twitter-icon.jpg" alt="Twitter" class="icon">
+                </a>
+                <a href="#" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+                    <img src="instagram-icon.jpg" alt="Instagram" class="icon">
+                </a>
+                <a href="#" target="_blank" rel="noopener noreferrer" aria-label="Facebook">
+                    <img src="facebook-icon.jpg" alt="Facebook" class="icon">
+                </a>
+            </div>
+        </div>
+
+        </footer>
+        
+
+    </body>
+</html>
