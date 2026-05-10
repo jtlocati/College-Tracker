@@ -9,6 +9,8 @@ from openai import OpenAI
 import os
 import time
 
+from models import Colleges
+
 def get_profile_data(profile):
     """Pull every field off a userprofile into a flat dict for easy access."""
     return {
@@ -85,6 +87,42 @@ def ping_ai(prompt):
     )
 
     return Responce.output_text
+
+def split_college_data(colleges):
+    schools = []
+
+    for entry in colleges.strip().rstrip(";").split(";"):
+        # Clean Data
+        entry = entry.strip()
+        if ":" not in entry:
+            continue
+
+        name, rest = entry.split(":", 1)
+        parts = [p.strip() for p in rest.split(",")]
+        if len(parts) < 5:
+            continue
+
+        teir = parts[0].lower()
+        deadline = parts[1]
+        likleyhood = parts[-1]
+        url = parts[-2]
+        major= ", ".join(parts[2:-2])
+
+        # fix misspelling
+        if teir == "saftey":
+            teir = "safety"
+
+        schools.append({
+            "school_name": name.strip(),
+            "tier": teir,
+            "deadline_type": deadline,
+            "major": major,
+            "portal_url": url,
+            "likelihood": likleyhood,
+        })
+
+    return schools 
+
 
 
 def login_view(request):
@@ -175,4 +213,70 @@ def WelcomeUser(request):
     return render(request, "Tracker/WelcomeUser.html", {
         "Accepto_Responce": Accepto_Responce
     })
+
+@login_required
+def Accepto_Reccomend(request):
+    profile = request.user.profile
+    data = get_profile_data(profile)
+
+    Activities_list = []
+    Award_list = []
+    Letter_list = []
+
+    for i in range(10):
+        i = i+1
+        Activities_list.append(data[f"activity{i}"])
+        Activities_list.append(data[f"description{i}"])
+    
+    for i in range(5):
+        i = i+1
+        Award_list.append(data[f"award{i}"])
+
+    for i in range(4):
+        i = i+1
+        Letter_list.append(data[f"teacher{i}"])
+
+
+
+    Schools = ping_ai(f"Given the following information I need you to generate a list of 10 reach, 10 match, and 5 safety schools for the person with the following profile, be honest, you are making serious career reccomendations, not making the person feel good/confident. i need you to put your responces in the format of: School1:reach/match/saftey,submission deadline(EA,ED,Reg,ect. Baised off of profile), major, school application url, likleyhood of admitance;School2:reach/match/saftey,submission deadline(EA,ED,Reg,ect. Baised off of profile), major, school application url, likleyhood of admitance;... DO NOT DEVIATE FROM THE FORMAT  Here are the stats: \
+                    State: {data['state']}, city: {data['city']}, school: {data['school']}\
+                    College type: {data['pref_area']}, major: {data['major']} \
+                    Overall GPA(UW): {data['overall_gpa_uw']}, Overall GPA(W): {data['overall_gpa_w']}\
+                    Freshman GPA(UW): {data['fresh_gpa_uw']}, Freshman GPA(W): {data['fresh_gpa_w']}\
+                    Sphmore GPA UW/W: {data['soph_gpa_uw']}/{data['soph_gpa_w']}\
+                    Junior GPA UW/W: {data['jun_gpa_uw']}/{data['jun_gpa_w']}\
+                    Senior GPA UW/W: {data['sen_gpa_uw']}/{data['sen_gpa_w']}\
+                    AP testing ([<Score1: Test1>, <Score2: test2>, ect]): \
+                    {list(data['ap_scores'])} \
+                    SAT: {data['sat']}, ACT: {data['act']} \
+                    Activitys('Activity1' , 'Description1' , 'Activity2' , 'Description2' ,ect...):\
+                    {Activities_list} \
+                    Awards( 'Award1' , 'Award2' , 'Award3' ,ect...): \
+                    {Award_list} \
+                    Letters of reccomendation( 'Letter1' , 'Letter2' , 'Letter3', ect..)\
+                    {Letter_list} \
+                    Additional information: {data['note']}")
+    
+    parsed = split_college_data(Schools)
+
+    # Wipe this user's previous Accepto picks so they don't pile up on every regen.
+    Colleges.objects.filter(user=request.user).delete()
+
+    for s in parsed:
+        Colleges.objects.create(
+            user=request.user,
+            school_name=s["school_name"],
+            Tier=s["tier"],
+            Satus="notstarted",
+            deadline_type=s["deadline_type"],
+            major=s["major"],
+            portal_url=s["portal_url"],
+            likelihood=s["likelihood"],
+        )
+
+    return render(request, "Tracker/accepto_schools.html", {
+        "Schools": Schools,
+        "parsed_schools": parsed,
+    })
+
 

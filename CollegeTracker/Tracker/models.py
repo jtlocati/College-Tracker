@@ -4,6 +4,8 @@ from django.contrib.auth.models import User
 # Create your models here.
 
 
+from django.contrib.auth.models import User
+
 class Colleges(models.Model):
     StatusOptions = [
         ('notstarted', 'Not Started'),
@@ -12,19 +14,33 @@ class Colleges(models.Model):
         ('deferred', 'Deferred'),
         ('accepted', 'Accepted'),
         ('waitlisted', 'Waitlisted'),
-        ('rejected', 'Rejected')
+        ('rejected', 'Rejected'),
     ]
-
     TierOptions = [
         ('reach', "Reach"),
         ('match', 'Match'),
-        ('safety', 'Safety')
+        ('safety', 'Safety'),
     ]
 
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="colleges")
     school_name = models.CharField(max_length=600)
-    Satus = models.CharField(max_length=600, choices=StatusOptions)
-    deadline = models.DateField()
+    Satus = models.CharField(max_length=600, choices=StatusOptions, default="notstarted")
+
+    deadline_type = models.CharField(max_length=20, blank=True)
+
+    deadline = models.DateField(blank=True, null=True)
+
     Tier = models.CharField(max_length=600, choices=TierOptions)
+    major = models.CharField(max_length=200, blank=True)
+
+    likelihood = models.CharField(max_length=20, blank=True)
+
+    notes = models.CharField(max_length=500, blank=True)
+
+    portal_url = models.CharField(max_length=600, blank=True)
+
+    def __str__(self):
+        return f"{self.school_name} ({self.Tier}) for {self.user.username}"
 
 
 class userprofile(models.Model):

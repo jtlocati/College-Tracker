@@ -11,5 +11,6 @@ urlpatterns = [
     path("dashboard/", views.home, name="home"),
     path("UserProfile/", views.UserProfile, name="UserProfile"),
     path("WelcomeUser/", views.WelcomeUser, name="WelcomeUser"),
+    path("accepto_schools", views.Accepto_Reccomend, name="AcceptoReccomend")
 
 ]
