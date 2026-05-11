@@ -22,7 +22,7 @@ class Colleges(models.Model):
         ('safety', 'Safety'),
     ]
 
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="colleges")
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="colleges", default=None)
     school_name = models.CharField(max_length=600)
     Satus = models.CharField(max_length=600, choices=StatusOptions, default="notstarted")
 

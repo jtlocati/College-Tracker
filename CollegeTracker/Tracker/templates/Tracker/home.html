@@ -1,10 +1,130 @@
-{% extends "Tracker/Layout.html" %}
-
-{% block title %} home {% endblock %}
+{% extends 'Tracker/Layout.html' %}
+{% block title %}Home - Match Map{% endblock %}
 
 {% block main %}
-{% load static %}
+<div class="tracker-main">
+    <div class="tracker-header">
+        <div class="filter-group">
+            <a href="?tier=all&status={{ active_status }}" class="filter-btn {% if active_tier == 'all' %}active{% endif %}">All</a>
+            <a href="?tier=reach&status={{ active_status }}" class="filter-btn {% if active_tier == 'reach' %}active{% endif %}">Reach</a>
+            <a href="?tier=match&status={{ active_status }}" class="filter-btn {% if active_tier == 'match' %}active{% endif %}">Match</a>
+            <a href="?tier=safety&status={{ active_status }}" class="filter-btn {% if active_tier == 'safety' %}active{% endif %}">Safety</a>
+        </div>
 
-<h1>HELO</h1>
+        <div class="filter-group">
+            <a href="?status=any&tier={{ active_tier }}" class="filter-btn {% if active_status == 'any' %}active{% endif %}">Any status</a>
+            <a href="?status=notstarted&tier={{ active_tier }}" class="filter-btn {% if active_status == 'notstarted' %}active{% endif %}">Not started</a>
+            <a href="?status=inprogress&tier={{ active_tier }}" class="filter-btn {% if active_status == 'inprogress' %}active{% endif %}">In progress</a>
+            <a href="?status=submitted&tier={{ active_tier }}" class="filter-btn {% if active_status == 'submitted' %}active{% endif %}">Submitted</a>
+            <a href="?status=decided&tier={{ active_tier }}" class="filter-btn {% if active_status == 'decided' %}active{% endif %}">Decided</a>
+        </div>
 
+        <div class="filter-group right">
+            <a href="#" class="btn btn-primary">+ Add School</a>
+            <form method="post" onsubmit="return confirm('Delete ALL your saved colleges?');" class="inline-form">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="reset">
+                <button type="submit" class="btn btn-secondary">Reset all data</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="tracker-table-wrap">
+        <table class="tracker-table">
+            <thead>
+                <tr>
+                    <th><a href="?sort=school_name&tier={{ active_tier }}&status={{ active_status }}">SCHOOL ↑</a></th>
+                    <th><a href="?sort=Tier&tier={{ active_tier }}&status={{ active_status }}">TIER ↑</a></th>
+                    <th>PLAN</th>
+                    <th><a href="?sort=deadline&tier={{ active_tier }}&status={{ active_status }}">DEADLINE ↑</a></th>
+                    <th>DAYS</th>
+                    <th>STATUS</th>
+                    <th>LIKELIHOOD</th>
+                    <th>PORTAL</th>
+                    <th>NOTES</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in schools %}
+                {% with s=row.obj %}
+                <tr>
+                    <td class="school-cell">
+                        <div class="school-name">{{ s.school_name }}</div>
+                        <div class="school-major">{{ s.major|default:"" }}</div>
+                    </td>
+                    <td><span class="tier-badge tier-{{ s.Tier }}">{{ s.Tier|upper }}</span></td>
+                    <td>
+                        <form method="post" class="cell-form">
+                            {% csrf_token %}
+                            <input type="hidden" name="action" value="update">
+                            <input type="hidden" name="id" value="{{ s.id }}">
+                            <select name="deadline_type" onchange="this.form.submit()">
+                                <option value="">—</option>
+                                {% for plan in plan_choices %}
+                                    <option value="{{ plan }}" {% if s.deadline_type == plan %}selected{% endif %}>{{ plan }}</option>
+                                {% endfor %}
+                            </select>
+                        </form>
+                    </td>
+                    <td>
+                        <form method="post" class="cell-form">
+                            {% csrf_token %}
+                            <input type="hidden" name="action" value="update">
+                            <input type="hidden" name="id" value="{{ s.id }}">
+                            <input type="date" name="deadline" value="{{ s.deadline|date:'Y-m-d' }}" onchange="this.form.submit()">
+                        </form>
+                    </td>
+                    <td class="days-cell">
+                        {% if row.days_left is None %}—
+                        {% elif row.days_left < 0 %}<span class="days-past">{{ row.days_left }} days</span>
+                        {% else %}{{ row.days_left }} days{% endif %}
+                    </td>
+                    <td>
+                        <form method="post" class="cell-form">
+                            {% csrf_token %}
+                            <input type="hidden" name="action" value="update">
+                            <input type="hidden" name="id" value="{{ s.id }}">
+                            <select name="Satus" onchange="this.form.submit()">
+                                {% for value, label in status_choices %}
+                                    <option value="{{ value }}" {% if s.Satus == value %}selected{% endif %}>{{ label }}</option>
+                                {% endfor %}
+                            </select>
+                        </form>
+                    </td>
+                    <td class="likelihood-cell">{{ s.likelihood|default:"—" }}</td>
+                    <td>
+                        {% if s.portal_url %}
+                            <a href="{{ s.portal_url }}" target="_blank" rel="noopener" class="portal-link">Apply ↗</a>
+                        {% else %}—{% endif %}
+                    </td>
+                    <td class="notes-cell">
+                        <form method="post" class="cell-form">
+                            {% csrf_token %}
+                            <input type="hidden" name="action" value="update">
+                            <input type="hidden" name="id" value="{{ s.id }}">
+                            <input type="text" name="notes" value="{{ s.notes }}" placeholder="essay status, supplements" onblur="this.form.submit()">
+                        </form>
+                    </td>
+                    <td>
+                        <form method="post" onsubmit="return confirm('Remove {{ s.school_name|escapejs }}?');" class="inline-form">
+                            {% csrf_token %}
+                            <input type="hidden" name="action" value="delete">
+                            <input type="hidden" name="id" value="{{ s.id }}">
+                            <button type="submit" class="btn-remove" aria-label="Remove">×</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endwith %}
+                {% empty %}
+                <tr>
+                    <td colspan="10" class="empty-state">
+                        No schools yet. Click <strong>+ Add School</strong> or run Accepto's recommendations to populate this list.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
 {% endblock %}
