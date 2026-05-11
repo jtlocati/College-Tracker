@@ -6,10 +6,12 @@
         <link href="{% static 'Tracker/styles.css' %}" rel="stylesheet">        
     </head>
     <body>
-        <header class="header">
+    <header class="header">
+        <a href="{% url 'Tracker:home' %}" class="header-link">
             <img src="{% static 'Tracker/logoMAIN.png' %}" alt="Match Map logo" class="logo">
             <h1 class="app-name">Match Map</h1>
-        </header>
+        </a>
+    </header>
 
         <main>
             {% block main %} {% endblock %}

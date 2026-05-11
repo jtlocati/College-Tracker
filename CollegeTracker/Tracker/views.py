@@ -207,23 +207,25 @@ def home(request):
         if action == "delete":
             Colleges.objects.filter(user=request.user, id=request.POST.get("id")).delete()
 
+        elif action == "reset":
+            Colleges.objects.filter(user=request.user).delete()
+
         elif action == "update":
             school = Colleges.objects.filter(user=request.user, id=request.POST.get("id")).first()
+            if school:
+                if "deadline_type" in request.POST:
+                    school.deadline_type = request.POST["deadline_type"]
+                if "deadline" in request.POST:
+                    school.deadline = request.POST["deadline"] or None
+                if "Satus" in request.POST:
+                    school.Satus = request.POST["Satus"]
+                if "notes" in request.POST:
+                    school.notes = request.POST["notes"]
+                school.save()
 
-        if school:
-            if "deadline_type" in request.POST:
-                school.deadline_type = request.POST["deadline_type"]
-            if "deadline" in request.POST:
-                school.deadline = request.POST["deadline"] or None
-            if "Satus" in request.POST:
-                school.Satus = request.POST["Satus"]
-            if "notes" in request.POST:
-                school.notes = request.POST["notes"]
-            school.save()
-        
         qs = request.META.get("QUERY_STRING", "")
         return redirect(f"{request.path}?{qs}" if qs else request.path)
-    
+
     schools_qs = Colleges.objects.filter(user=request.user)
 
     active_tier = request.GET.get("tier", "all")
@@ -235,15 +237,15 @@ def home(request):
         schools_qs = schools_qs.filter(Satus__in=["accepted", "rejected", "waitlisted", "deferred"])
     elif active_status != "any":
         schools_qs = schools_qs.filter(Satus=active_status)
-    
+
 
     AllowedSorts = {"school_name", "-school_name", "Tier", "-Tier", "deadline_type", "-deadline_type", "deadline", "-deadline", "Satus", "-Satus"}
 
-    sort = request.GET.get("sort", "School_name")
+    sort = request.GET.get("sort", "school_name")
 
     if sort in AllowedSorts:
         schools_qs = schools_qs.order_by(sort)
-    
+
     #compute Next deadline
     today = date.today()
     schools = []
@@ -254,8 +256,8 @@ def home(request):
         else:
             days_left = None
         schools.append({"obj": cool, "days_left": days_left})
-    
-        return render(request, "Tracker/home.html", {
+
+    return render(request, "Tracker/home.html", {
         "schools": schools,
         "active_tier": active_tier,
         "active_status": active_status,
@@ -322,7 +324,7 @@ def Accepto_Reccomend(request):
     profile = request.user.profile
     data = get_profile_data(profile)
 
-    Stats = GetStats()
+    Stats = GetStats(request)
 
     Schools = ping_ai(f"Given the following information I need you to generate a list of 10 reach, 10 match, and 5 safety schools for the person with the following profile, be honest, you are making serious career reccomendations, not making the person feel good/confident. i need you to put your responces in the format of: School1:reach/match/saftey,submission deadline(EA,ED,Reg,ect. Baised off of profile), major, school application url, likleyhood of admitance;School2:reach/match/saftey,submission deadline(EA,ED,Reg,ect. Baised off of profile), major, school application url, likleyhood of admitance;... DO NOT DEVIATE FROM THE FORMAT  Here are the stats: \
                       {Stats}")
@@ -344,7 +346,6 @@ def Accepto_Reccomend(request):
             likelihood=s["likelihood"],
         )
 
-    return render(request, "Tracker/accepto_schools.html", {
-        "Schools": Schools,
-        "parsed_schools": parsed,
-    })
+    # Hand off to the home view so it loads the freshly-saved schools with
+    # all the filter/sort context home.html expects.
+    return redirect("Tracker:home")
