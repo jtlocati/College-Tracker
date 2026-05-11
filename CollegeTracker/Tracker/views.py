@@ -331,7 +331,7 @@ def Accepto_Reccomend(request):
     
     parsed = split_college_data(Schools)
 
-    # Wipe this user's previous Accepto picks so they don't pile up on every regen.
+    # Wipe this user's previous Accepto picks
     Colleges.objects.filter(user=request.user).delete()
 
     for s in parsed:
