@@ -349,3 +349,36 @@ def Accepto_Reccomend(request):
     # Hand off to the home view so it loads the freshly-saved schools with
     # all the filter/sort context home.html expects.
     return redirect("Tracker:home")
+
+@login_required
+def addNewSchool(request):
+
+    profile, _ = userprofile.objects.get_or_create(user=request.user)
+
+    if request.method == "POST":
+        form = UserProfileForm(request.POST, instance=profile)
+
+        if form.is_valid():
+            form.save()
+            return redirect("Tracker:ShowNew")
+        else:
+            form = UserProfileForm(instance=profile)
+
+    return render(request, "Tracker/AddNew.html", {})
+
+
+@login_required
+def Process_NewSchool(request):
+
+    Stats = GetStats(request)
+
+    ping_ai(f"With this users information: {Stats}\n and perspective college: ")
+    
+    return redirect("Tracker:ShowNew")
+
+
+@login_required
+def ShowNew(request):
+    return render(request, "ShowNew.html",{
+
+    })
