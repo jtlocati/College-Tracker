@@ -13,7 +13,7 @@ from .models import Colleges
 
 def get_profile_data(profile):
     """Pull every field off a userprofile into a flat dict for easy access."""
-    return {
+    Data = {
         # Geographic
         "state": profile.State,
         "city": profile.City,
@@ -77,6 +77,11 @@ def get_profile_data(profile):
         "pref_area": profile.pref_area,
         "major": profile.major
     }
+
+    if Data["major"] is None or Data["major"] == "":
+        Data["major"] = "undecided"
+
+    return Data
 
 def ping_ai(prompt):
     client = OpenAI(api_key=os.getenv("openAPIKEY"))
