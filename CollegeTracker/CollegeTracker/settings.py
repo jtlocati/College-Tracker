@@ -126,6 +126,6 @@ STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-LOGIN_URL = "Tracker:login"
+LOGIN_URL = "Tracker:login_view"
 LOGIN_REDIRECT = "Tracker:home"
-LOGOUT_URL = "Tracker:login"
+LOGOUT_URL = "Tracker:login_view"
