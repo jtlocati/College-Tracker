@@ -2,3 +2,5 @@ Django==5.1.15
 openai
 gunicorn
 whitenoise
+psycopg2-binary
+dj-database-url
