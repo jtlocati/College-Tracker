@@ -23,11 +23,11 @@ body {
     gap: 1rem;
 }
 
-/* Floating logout pill in the bottom-left corner */
+/* Floating logout pill in the bottom-right corner */
 .logout-fab {
     position: fixed;
     bottom: 1.25rem;
-    left: 1.25rem;
+    right: 1.25rem;
     z-index: 900;
     display: flex;
     align-items: center;
