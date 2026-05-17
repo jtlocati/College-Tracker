@@ -293,7 +293,7 @@ def UserProfile(request):
         form = UserProfileForm(instance=profile)
         formset = APScoreFormSet(instance=profile)
 
-    return render(request, "Tracker/UserProfile.html", {
+    return render(request, "Tracker/userprofile.html", {
         "form": form,
         "formset": formset,
     })
@@ -323,7 +323,7 @@ def WelcomeUser(request):
     Accepto_Responce = ping_ai(f"I need you to introduce yourself as an AI bot name 'Accepto' that is here to make the user feel confident you being able to find good coleges for them to apply to, given their information: sat: {sat}, act: {act}, activitys: {activites_list}, awards{award_list}, state: {state}, background: {note}, intended major: {major} and preffered area for a new college: {pref_area}. You must give them a 2 sentance summary about themselfs, making them fell confident. Aslo include 1-2 prospective schools. <=400 chars. end on a 'lets get started!' note")
 
     
-    return render(request, "Tracker/WelcomeUser.html", {
+    return render(request, "Tracker/welcomeuser.html", {
         "Accepto_Responce": Accepto_Responce
     })
 
@@ -441,7 +441,7 @@ def EditProfile(request):
         form = UserProfileForm(instance=profile)
         formset = APScoreFormSet(instance=profile)
 
-    return render(request, "Tracker/UserProfile.html", {
+    return render(request, "Tracker/userprofile.html", {
         "form": form,
         "formset": formset,
     })
