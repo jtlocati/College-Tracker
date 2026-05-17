@@ -1,11 +1,9 @@
 {% extends "Tracker/layout.html" %}
+{% load static %}
 
 {% block title %} home {% endblock %}
 
 {% block main %}
-{% load static %}
-
-{% load static %}
 
 <div class="modal-overlay" id="accepto-modal">
     <div class="modal-card">
@@ -20,10 +18,34 @@
         </div>
 
         <div class="modal-actions">
-            <a href="{% url 'Tracker:AcceptoReccomend' %}" class="modal-button modal-button-primary">Let Accepto generate me my college list</a>
+            <a href="{% url 'Tracker:AcceptoReccomend' %}" id="generate-list-btn" class="modal-button modal-button-primary">Let Accepto generate me my college list</a>
             <a href="{% url 'Tracker:home' %}" class="modal-button modal-button-secondary">Manually pick colleges</a>
         </div>
     </div>
 </div>
+
+<!-- Loading overlay shown while Accepto builds the school list -->
+<div class="loading-overlay" id="loading-overlay" aria-hidden="true">
+    <div class="loading-card">
+        <div class="loading-spinner"></div>
+        <h2 class="loading-title">Accepto is building your college list...</h2>
+        <p class="loading-subtitle">This usually takes 30–60 seconds. Hang tight.</p>
+    </div>
+</div>
+
+<script>
+(function () {
+    const btn = document.getElementById('generate-list-btn');
+    const overlay = document.getElementById('loading-overlay');
+    if (!btn || !overlay) return;
+
+    btn.addEventListener('click', function () {
+        // Don't preventDefault — let the navigation continue. The overlay just
+        // covers the screen until the new page (home) finishes loading.
+        overlay.classList.add('visible');
+        overlay.setAttribute('aria-hidden', 'false');
+    });
+})();
+</script>
 
 {% endblock %}
