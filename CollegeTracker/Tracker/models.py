@@ -26,14 +26,14 @@ class Colleges(models.Model):
     school_name = models.CharField(max_length=600)
     Satus = models.CharField(max_length=600, choices=StatusOptions, default="notstarted")
 
-    deadline_type = models.CharField(max_length=20, blank=True)
+    deadline_type = models.CharField(max_length=100, blank=True)
 
     deadline = models.DateField(blank=True, null=True)
 
     Tier = models.CharField(max_length=600, choices=TierOptions)
     major = models.CharField(max_length=200, blank=True)
 
-    likelihood = models.CharField(max_length=20, blank=True)
+    likelihood = models.CharField(max_length=100, blank=True)
 
     notes = models.CharField(max_length=500, blank=True)
 
@@ -71,25 +71,25 @@ class userprofile(models.Model):
 
     # Activities
     Activity1 = models.CharField(max_length=100, blank=True)
-    Description1 = models.CharField(max_length=150, blank=True)
+    Description1 = models.CharField(max_length=500, blank=True)
     Activity2 = models.CharField(max_length=100, blank=True)
-    Description2 = models.CharField(max_length=150, blank=True)
+    Description2 = models.CharField(max_length=500, blank=True)
     Activity3 = models.CharField(max_length=100, blank=True)
-    Description3 = models.CharField(max_length=150, blank=True)
+    Description3 = models.CharField(max_length=500, blank=True)
     Activity4 = models.CharField(max_length=100, blank=True)
-    Description4 = models.CharField(max_length=150, blank=True)
+    Description4 = models.CharField(max_length=500, blank=True)
     Activity5 = models.CharField(max_length=100, blank=True)
-    Description5 = models.CharField(max_length=150, blank=True)
+    Description5 = models.CharField(max_length=500, blank=True)
     Activity6 = models.CharField(max_length=100, blank=True)
-    Description6 = models.CharField(max_length=150, blank=True)
+    Description6 = models.CharField(max_length=500, blank=True)
     Activity7 = models.CharField(max_length=100, blank=True)
-    Description7 = models.CharField(max_length=150, blank=True)
+    Description7 = models.CharField(max_length=500, blank=True)
     Activity8 = models.CharField(max_length=100, blank=True)
-    Description8 = models.CharField(max_length=150, blank=True)
+    Description8 = models.CharField(max_length=500, blank=True)
     Activity9 = models.CharField(max_length=100, blank=True)
-    Description9 = models.CharField(max_length=150, blank=True)
+    Description9 = models.CharField(max_length=500, blank=True)
     Activity10 = models.CharField(max_length=100, blank=True)
-    Description10 = models.CharField(max_length=150, blank=True)
+    Description10 = models.CharField(max_length=500, blank=True)
 
     #Awards
     Award1 = models.CharField(max_length=150, blank=True)
