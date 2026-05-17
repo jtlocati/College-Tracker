@@ -1,0 +1,52 @@
+{% extends 'Tracker/Layout.html' %}
+{% load static %}
+
+{% block title %}Accepto's Take - Match Map{% endblock %}
+
+{% block main %}
+<div class="summary-main">
+    <div class="summary-card">
+
+        <!-- Logo placeholder (centered top) -->
+        <img src="{% static 'Tracker/LogoWAVING.png' %}" alt="Accepto" class="summary-logo">
+
+        <h2 class="summary-title">Accepto says:</h2>
+
+        <div class="summary-message">
+            {{ message|linebreaks }}
+        </div>
+
+        <!-- One-school card styled like a home.html row -->
+        <div class="summary-school">
+            <div class="summary-school-header">
+                <div>
+                    <div class="school-name">{{ school.school_name }}</div>
+                    <div class="school-major">{{ school.major|default:"" }}</div>
+                </div>
+                <span class="tier-badge tier-{{ school.Tier }}">{{ school.Tier|upper }}</span>
+            </div>
+
+            <div class="summary-school-stats">
+                <div class="stat">
+                    <div class="stat-label">PLAN</div>
+                    <div class="stat-value">{{ school.deadline_type|default:"—" }}</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-label">LIKELIHOOD</div>
+                    <div class="stat-value">{{ school.likelihood|default:"—" }}</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-label">PORTAL</div>
+                    <div class="stat-value">
+                        {% if school.portal_url %}
+                            <a href="{{ school.portal_url }}" target="_blank" rel="noopener" class="portal-link">Apply ↗</a>
+                        {% else %}—{% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <a href="{% url 'Tracker:home' %}" class="login-button summary-confirm">Looks good!</a>
+    </div>
+</div>
+{% endblock %}

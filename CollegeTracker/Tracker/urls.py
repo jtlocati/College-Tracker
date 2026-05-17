@@ -12,7 +12,7 @@ urlpatterns = [
     path("UserProfile/", views.UserProfile, name="UserProfile"),
     path("WelcomeUser/", views.WelcomeUser, name="WelcomeUser"),
     path("accepto_schools", views.Accepto_Reccomend, name="AcceptoReccomend"),
-    path("addnewschool/", views.addNewSchool, name="AddNew"),
-    path("shownewschool/", views.ShowNew, name = "ShowNew")
-
+    path("addschool/", views.AddSchool, name="AddSchool"),
+    path("schoolsummary/<int:school_id>/", views.schoolsummary, name="schoolsummary"),
+    path("api/college-search/", views.college_search_api, name="college_search_api"),
 ]

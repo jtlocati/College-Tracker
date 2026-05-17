@@ -757,3 +757,74 @@ body {
     padding: 2.5rem !important;
     color: #888;
 }
+/* Add School page */
+.add-school-main {
+    display: flex;
+    justify-content: center;
+    padding: 3rem 1rem;
+}
+
+.add-school-card {
+    background-color: #ffffff;
+    padding: 2.5rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    width: 100%;
+    max-width: 500px;
+}
+
+.autocomplete-wrap {
+    position: relative;
+    margin: 1.5rem 0 1rem;
+}
+
+#school-input {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    font-size: 1rem;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    outline: none;
+    font-family: inherit;
+}
+
+#school-input:focus {
+    border-color: #3498db;
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.15);
+}
+
+.autocomplete-results {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    list-style: none;
+    margin: 0.25rem 0 0;
+    padding: 0;
+    background-color: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    max-height: 280px;
+    overflow-y: auto;
+    z-index: 100;
+    display: none;
+}
+
+.autocomplete-results li {
+    padding: 0.6rem 0.85rem;
+    cursor: pointer;
+    font-size: 0.95rem;
+    border-bottom: 1px solid #f4f4f4;
+}
+
+.autocomplete-results li:last-child { border-bottom: none; }
+.autocomplete-results li:hover {
+    background-color: #f5f9ff;
+    color: #2c3e50;
+}
+
+#submit-btn:disabled {
+    background-color: #bdc3c7;
+    cursor: not-allowed;
+}

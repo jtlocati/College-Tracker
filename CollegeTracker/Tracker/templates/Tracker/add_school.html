@@ -1,0 +1,108 @@
+{% extends 'Tracker/Layout.html' %}
+{% block title %}Add a School - Match Map{% endblock %}
+
+{% block main %}
+<div class="add-school-main">
+    <div class="add-school-card">
+        <h2 class="login-title">Add a School</h2>
+        <p class="profile-subtitle">Start typing a college name and pick from the dropdown.</p>
+
+        <form method="post" action="{% url 'Tracker:AddSchool' %}" id="add-school-form">
+            {% csrf_token %}
+
+            <div class="autocomplete-wrap">
+                <input
+                    type="text"
+                    id="school-input"
+                    name="school_name"
+                    placeholder="e.g. Stanford"
+                    autocomplete="off"
+                    required>
+                <ul class="autocomplete-results" id="autocomplete-results"></ul>
+            </div>
+
+            <button type="submit" class="login-button" id="submit-btn" disabled>
+                Add & Evaluate with Accepto
+            </button>
+        </form>
+    </div>
+</div>
+
+<!-- Reuse the loading overlay from UserProfile -->
+<div class="loading-overlay" id="loading-overlay" aria-hidden="true">
+    <div class="loading-card">
+        <div class="loading-spinner"></div>
+        <h2 class="loading-title">Accepto is evaluating this school...</h2>
+        <p class="loading-subtitle">Hang tight — just a few seconds.</p>
+    </div>
+</div>
+
+<script>
+(function () {
+    const input    = document.getElementById('school-input');
+    const results  = document.getElementById('autocomplete-results');
+    const submit   = document.getElementById('submit-btn');
+    const form     = document.getElementById('add-school-form');
+    const overlay  = document.getElementById('loading-overlay');
+
+    let debounce = null;
+    let chosen   = '';
+
+    function refreshSubmitState() {
+        // Only allow submit when the text exactly matches a chosen suggestion.
+        submit.disabled = !(chosen && input.value === chosen);
+    }
+
+    input.addEventListener('input', function () {
+        const q = input.value.trim();
+        if (q !== chosen) chosen = '';
+        refreshSubmitState();
+
+        clearTimeout(debounce);
+        if (q.length < 2) {
+            results.innerHTML = '';
+            results.style.display = 'none';
+            return;
+        }
+
+        debounce = setTimeout(function () {
+            fetch("{% url 'Tracker:college_search_api' %}?q=" + encodeURIComponent(q))
+                .then(function (r) { return r.json(); })
+                .then(function (data) {
+                    results.innerHTML = '';
+                    if (!data.results.length) {
+                        results.style.display = 'none';
+                        return;
+                    }
+                    data.results.forEach(function (name) {
+                        const li = document.createElement('li');
+                        li.textContent = name;
+                        li.addEventListener('click', function () {
+                            input.value = name;
+                            chosen = name;
+                            results.innerHTML = '';
+                            results.style.display = 'none';
+                            refreshSubmitState();
+                        });
+                        results.appendChild(li);
+                    });
+                    results.style.display = 'block';
+                });
+        }, 150);
+    });
+
+    // Close dropdown when clicking outside.
+    document.addEventListener('click', function (e) {
+        if (!input.contains(e.target) && !results.contains(e.target)) {
+            results.style.display = 'none';
+        }
+    });
+
+    // Show the loading overlay on submit.
+    form.addEventListener('submit', function () {
+        overlay.classList.add('visible');
+        overlay.setAttribute('aria-hidden', 'false');
+    });
+})();
+</script>
+{% endblock %}

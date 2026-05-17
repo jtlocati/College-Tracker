@@ -20,7 +20,7 @@
         </div>
 
         <div class="filter-group right">
-            <a href="#" class="btn btn-primary">+ Add School</a>
+            <a href="{% url 'Tracker:AddSchool' %}" class="btn btn-primary">+ Add School</a>
             <form method="post" onsubmit="return confirm('Delete ALL your saved colleges?');" class="inline-form">
                 {% csrf_token %}
                 <input type="hidden" name="action" value="reset">
@@ -103,7 +103,7 @@
                             {% csrf_token %}
                             <input type="hidden" name="action" value="update">
                             <input type="hidden" name="id" value="{{ s.id }}">
-                            <input type="text" name="notes" value="{{ s.notes }}" placeholder="essay status, supplements" onblur="this.form.submit()">
+                            <input type="text" name="notes" value="{{ s.notes }}" placeholder="notes" onblur="this.form.submit()">
                         </form>
                     </td>
                     <td>
@@ -111,7 +111,7 @@
                             {% csrf_token %}
                             <input type="hidden" name="action" value="delete">
                             <input type="hidden" name="id" value="{{ s.id }}">
-                            <button type="submit" class="btn-remove" aria-label="Remove">×</button>
+                            <button type="submit" class="btn-remove" aria-label="Remove">x</button>
                         </form>
                     </td>
                 </tr>

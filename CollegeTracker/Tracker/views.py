@@ -11,6 +11,9 @@ from datetime import date
 
 from .models import Colleges
 
+from django.http import JsonResponse
+from .colleges_data import US_COLLEGES
+
 def get_profile_data(profile):
     """Pull every field off a userprofile into a flat dict for easy access."""
     Data = {
@@ -355,35 +358,65 @@ def Accepto_Reccomend(request):
     # all the filter/sort context home.html expects.
     return redirect("Tracker:home")
 
+
 @login_required
-def addNewSchool(request):
-
-    profile, _ = userprofile.objects.get_or_create(user=request.user)
-
+def AddSchool(request):
     if request.method == "POST":
-        form = UserProfileForm(request.POST, instance=profile)
+        school_name = request.POST.get("school_name", "").strip()
+        if school_name is None or school_name == "":
+            return redirect("Tracker:AddSchool")
+        
+        stats = GetStats(request)
 
-        if form.is_valid():
-            form.save()
-            return redirect("Tracker:ShowNew")
-        else:
-            form = UserProfileForm(instance=profile)
+        Evaluate = ping_ai(f"I need you to evaluate this students chances of getting into {school_name}, I need you to be honest, you are not trying to give this person confidence or trying to make them feel better about the admissions process. \
+                           Instead you are trying to give this person a proper insight to the school \
+                           I need you to format your responces in the format of: School1:reach/match/saftey,submission deadline(EA,ED,Reg,ect. Baised off of profile), major, school application url, likleyhood of admitance DO NOT DEVIATE FROM THE FORMAT \
+                           here are the stats: {stats}")
+        
+        parsed_data = split_college_data(Evaluate)
 
-    return render(request, "Tracker/AddNew.html", {})
+        if parsed_data:
+            s = parsed_data[0]
+            school =  Colleges.objects.create(
+                user = request.user,
+                school_name = s["school_name"],
+                Tier = s["tier"],
+                Satus="notstarted",
+                deadline_type = s["deadline_type"],
+                major = s["major"],
+                portal_url = s["portal_url"],
+                likelihood = s["likelihood"],
+            )
 
-
-@login_required
-def Process_NewSchool(request):
-
-    Stats = GetStats(request)
-
-    ping_ai(f"With this users information: {Stats}\n and perspective college: ")
+        message = generate_addschool_massage(school_name, parsed_data, stats)
+        #return redirect("Tracker:home")
+        return redirect("Tracker:schoolsummary", message, school_id=school.id)
     
-    return redirect("Tracker:ShowNew")
-
+    return render(request, "Tracker/add_school.html")
 
 @login_required
-def ShowNew(request):
-    return render(request, "ShowNew.html",{
+def schoolsummary(request, message, school_id):
+    school_info = Colleges.objects.filter(user = request.user, id=school_id).first()
+    if school_info is None or school_info == "":
+        return redirect("Tracker:home")
 
+    return render(request, "Tracker/schoolsummary.html", {
+        "school": school_info,
+        "message": message
     })
+
+def college_search_api(request):
+    query = request.GET.get("q", "").strip().lower()
+    if len(query) < 2:
+        return JsonResponse({"results": []})
+    matches = [c for c in US_COLLEGES if query in c.lower()][:10]
+    return JsonResponse({"results": matches})
+
+
+
+def generate_addschool_massage(college_name, school_data, stats):
+    message = ping_ai(f"I need you to give a quick summary as to why you deemed that {college_name} was: {school_data} (This was in the format of: 'school_name': name.strip(),'tier': teir, 'deadline_type': deadline, 'major': major, 'portal_url': url, 'likelihood': likleyhood,) baised off of their stats: {stats} \
+                      keep it in one paragraph")
+    
+    return message
+
