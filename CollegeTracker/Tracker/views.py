@@ -426,6 +426,65 @@ def college_search_api(request):
     return JsonResponse({"results": matches})
 
 
+@login_required
+def EditProfile(request):
+    profile, _ = userprofile.objects.get_or_create(user=request.user)
+
+    if request.method == "POST":
+        form = UserProfileForm(request.POST, instance=profile)
+        formset = APScoreFormSet(request.POST, instance=profile)
+        if form.is_valid() and formset.is_valid():
+            form.save()
+            formset.save()
+            return redirect("Tracker:UpdateColleges")
+    else:
+        form = UserProfileForm(instance=profile)
+        formset = APScoreFormSet(instance=profile)
+
+    return render(request, "Tracker/UserProfile.html", {
+        "form": form,
+        "formset": formset,
+    })
+
+
+@login_required
+def UpdateColleges(request):
+    user_colleges = Colleges.objects.filter(user=request.user)
+    if not user_colleges.exists():
+        return redirect("Tracker:home")
+
+    stats = GetStats(request)
+    school_names = "; ".join(c.school_name for c in user_colleges)
+
+    response = ping_ai(
+        f"The student below has updated their profile. Re-evaluate the following "
+        f"schools honestly given the new stats. Format EXACTLY as: "
+        f"School1:reach/match/saftey,submission deadline(EA,ED,Reg,ect),major,"
+        f"school application url,likleyhood of admitance;School2:...;... "
+        f"DO NOT DEVIATE FROM THE FORMAT.\n\n"
+        f"Schools to re-evaluate: {school_names}\n\n"
+        f"Updated stats:\n{stats}"
+    )
+
+    parsed = split_college_data(response)
+
+    # Match each Accepto result back to the user's row by school_name.
+    for s in parsed:
+        college = Colleges.objects.filter(
+            user=request.user,
+            school_name=s["school_name"],
+        ).first()
+        if college:
+            college.Tier = s["tier"]
+            college.deadline_type = s["deadline_type"]
+            college.major = s["major"]
+            college.portal_url = s["portal_url"]
+            college.likelihood = s["likelihood"]
+            college.save()
+
+    return redirect("Tracker:home")
+
+
 
 def generate_addschool_massage(college_name, school_data, stats):
     message = ping_ai(f"I need you to give a quick summary as to why you deemed that {college_name} was: {school_data} (This was in the format of: 'school_name': name.strip(),'tier': teir, 'deadline_type': deadline, 'major': major, 'portal_url': url, 'likelihood': likleyhood,) baised off of their stats: {stats} \

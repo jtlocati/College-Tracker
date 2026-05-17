@@ -3,7 +3,8 @@
     <head>
         <title>{% block title %} {% endblock %}</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link href="{% static 'Tracker/styles.css' %}" rel="stylesheet">        
+        <link rel="icon" type="image/png" href="{% static 'Tracker/logoMAIN_TRANS.png' %}">
+        <link href="{% static 'Tracker/styles.css' %}" rel="stylesheet">
     </head>
     <body>
     <header class="header">
@@ -12,6 +13,25 @@
             <h1 class="app-name">Match Map</h1>
         </a>
     </header>
+
+    {% if user.is_authenticated %}
+        <div class="logout-fab">
+            <span class="logout-fab-user">
+                <span class="logout-fab-avatar">{{ user.username|slice:":1"|upper }}</span>
+                <span class="logout-fab-username">{{ user.username }}</span>
+            </span>
+            <a href="{% url 'Tracker:logout' %}" class="logout-fab-btn" title="Log out">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                     aria-hidden="true">
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                    <polyline points="16 17 21 12 16 7"></polyline>
+                    <line x1="21" y1="12" x2="9" y2="12"></line>
+                </svg>
+                <span>Log out</span>
+            </a>
+        </div>
+    {% endif %}
 
         <main>
             {% block main %} {% endblock %}

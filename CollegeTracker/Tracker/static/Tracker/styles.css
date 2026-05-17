@@ -23,6 +23,92 @@ body {
     gap: 1rem;
 }
 
+/* Floating logout pill in the bottom-left corner */
+.logout-fab {
+    position: fixed;
+    bottom: 1.25rem;
+    left: 1.25rem;
+    z-index: 900;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.45rem 0.6rem 0.45rem 0.55rem;
+    background-color: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 999px;
+    box-shadow: 0 6px 18px rgba(15, 23, 42, 0.12);
+    font-size: 0.9rem;
+    transition: box-shadow 0.2s, transform 0.2s;
+}
+
+.logout-fab:hover {
+    box-shadow: 0 10px 24px rgba(15, 23, 42, 0.18);
+    transform: translateY(-1px);
+}
+
+.logout-fab-user {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #2c3e50;
+    font-weight: 500;
+    padding-right: 0.25rem;
+    border-right: 1px solid #eef0f3;
+}
+
+.logout-fab-avatar {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #2c3e50, #3498db);
+    color: #ffffff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.85rem;
+    font-weight: 600;
+    line-height: 1;
+}
+
+.logout-fab-username {
+    max-width: 140px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.logout-fab-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.4rem 0.85rem;
+    border-radius: 999px;
+    text-decoration: none;
+    font-weight: 500;
+    color: #2c3e50;
+    background-color: #f4f6f8;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.logout-fab-btn:hover {
+    background-color: #fdecea;
+    color: #b71c1c;
+}
+
+.logout-fab-btn svg {
+    flex-shrink: 0;
+}
+
+@media (max-width: 600px) {
+    .logout-fab-username {
+        display: none;
+    }
+    .logout-fab-user {
+        border-right: none;
+        padding-right: 0;
+    }
+}
+
 .logo-placeholder {
     width: 50px;
     height: 50px;

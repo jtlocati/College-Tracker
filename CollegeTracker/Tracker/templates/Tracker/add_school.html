@@ -49,8 +49,8 @@
     let chosen   = '';
 
     function refreshSubmitState() {
-        // Only allow submit when the text exactly matches a chosen suggestion.
-        submit.disabled = !(chosen && input.value === chosen);
+        // Enable as long as there's any text — picking a suggestion is optional.
+        submit.disabled = input.value.trim().length === 0;
     }
 
     input.addEventListener('input', function () {

@@ -15,4 +15,6 @@ urlpatterns = [
     path("addschool/", views.AddSchool, name="AddSchool"),
     path("schoolsummary/<int:school_id>/", views.schoolsummary, name="schoolsummary"),
     path("api/college-search/", views.college_search_api, name="college_search_api"),
+    path("edit-profile/", views.EditProfile, name="EditProfile"),
+    path("update-colleges/", views.UpdateColleges, name="UpdateColleges"),
 ]

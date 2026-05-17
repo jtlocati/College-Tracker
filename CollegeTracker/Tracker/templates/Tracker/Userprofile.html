@@ -10,7 +10,7 @@
         <h2 class="profile-title">My Profile</h2>
         <p class="profile-subtitle">Logged in as <strong>{{ user.username }}</strong></p>
 
-        <form method="post" action="{% url 'Tracker:UserProfile' %}" id="profile-form">
+        <form method="post" action="" id="profile-form">
             {% csrf_token %}
 
             {% if form.non_field_errors %}
