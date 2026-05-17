@@ -16,37 +16,82 @@
             {{ message|linebreaks }}
         </div>
 
-        <!-- One-school card styled like a home.html row -->
-        <div class="summary-school">
-            <div class="summary-school-header">
-                <div>
-                    <div class="school-name">{{ school.school_name }}</div>
-                    <div class="school-major">{{ school.major|default:"" }}</div>
-                </div>
-                <span class="tier-badge tier-{{ school.Tier }}">{{ school.Tier|upper }}</span>
-            </div>
-
-            <div class="summary-school-stats">
-                <div class="stat">
-                    <div class="stat-label">PLAN</div>
-                    <div class="stat-value">{{ school.deadline_type|default:"—" }}</div>
-                </div>
-                <div class="stat">
-                    <div class="stat-label">LIKELIHOOD</div>
-                    <div class="stat-value">{{ school.likelihood|default:"—" }}</div>
-                </div>
-                <div class="stat">
-                    <div class="stat-label">PORTAL</div>
-                    <div class="stat-value">
-                        {% if school.portal_url %}
-                            <a href="{{ school.portal_url }}" target="_blank" rel="noopener" class="portal-link">Apply ↗</a>
-                        {% else %}—{% endif %}
-                    </div>
-                </div>
-            </div>
+        <!-- Single home-style row -->
+        <div class="tracker-table-wrap summary-row-wrap">
+            <table class="tracker-table">
+                <tbody>
+                    <tr>
+                        <td class="school-cell">
+                            <div class="school-name">{{ school.school_name }}</div>
+                            <div class="school-major">{{ school.major|default:"" }}</div>
+                        </td>
+                        <td><span class="tier-badge tier-{{ school.Tier }}">{{ school.Tier|upper }}</span></td>
+                        <td>
+                            <form method="post" action="{% url 'Tracker:home' %}" class="cell-form">
+                                {% csrf_token %}
+                                <input type="hidden" name="action" value="update">
+                                <input type="hidden" name="id" value="{{ school.id }}">
+                                <select name="deadline_type" onchange="this.form.submit()">
+                                    <option value="">—</option>
+                                    {% for plan in plan_choices %}
+                                        <option value="{{ plan }}" {% if school.deadline_type == plan %}selected{% endif %}>{{ plan }}</option>
+                                    {% endfor %}
+                                </select>
+                            </form>
+                        </td>
+                        <td>
+                            <form method="post" action="{% url 'Tracker:home' %}" class="cell-form">
+                                {% csrf_token %}
+                                <input type="hidden" name="action" value="update">
+                                <input type="hidden" name="id" value="{{ school.id }}">
+                                <input type="date" name="deadline" value="{{ school.deadline|date:'Y-m-d' }}" onchange="this.form.submit()">
+                            </form>
+                        </td>
+                        <td class="days-cell">
+                            {% if days_left is None %}—
+                            {% elif days_left < 0 %}<span class="days-past">{{ days_left }} days</span>
+                            {% else %}{{ days_left }} days{% endif %}
+                        </td>
+                        <td>
+                            <form method="post" action="{% url 'Tracker:home' %}" class="cell-form">
+                                {% csrf_token %}
+                                <input type="hidden" name="action" value="update">
+                                <input type="hidden" name="id" value="{{ school.id }}">
+                                <select name="Satus" onchange="this.form.submit()">
+                                    {% for value, label in status_choices %}
+                                        <option value="{{ value }}" {% if school.Satus == value %}selected{% endif %}>{{ label }}</option>
+                                    {% endfor %}
+                                </select>
+                            </form>
+                        </td>
+                        <td class="likelihood-cell">{{ school.likelihood|default:"—" }}</td>
+                        <td>
+                            {% if school.portal_url %}
+                                <a href="{{ school.portal_url }}" target="_blank" rel="noopener" class="portal-link">Apply ↗</a>
+                            {% else %}—{% endif %}
+                        </td>
+                        <td class="notes-cell">
+                            <form method="post" action="{% url 'Tracker:home' %}" class="cell-form">
+                                {% csrf_token %}
+                                <input type="hidden" name="action" value="update">
+                                <input type="hidden" name="id" value="{{ school.id }}">
+                                <input type="text" name="notes" value="{{ school.notes }}" placeholder="notes" onblur="this.form.submit()">
+                            </form>
+                        </td>
+                        <td>
+                            <form method="post" action="{% url 'Tracker:home' %}" onsubmit="return confirm('Remove {{ school.school_name|escapejs }}?');" class="inline-form">
+                                {% csrf_token %}
+                                <input type="hidden" name="action" value="delete">
+                                <input type="hidden" name="id" value="{{ school.id }}">
+                                <button type="submit" class="btn-remove" aria-label="Remove">x</button>
+                            </form>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
 
-        <a href="{% url 'Tracker:home' %}" class="login-button summary-confirm">Looks good!</a>
+        <a href="{% url 'Tracker:home' %}" class="summary-confirm">Looks good!</a>
     </div>
 </div>
 {% endblock %}

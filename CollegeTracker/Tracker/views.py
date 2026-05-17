@@ -388,21 +388,34 @@ def AddSchool(request):
                 likelihood = s["likelihood"],
             )
 
-        message = generate_addschool_massage(school_name, parsed_data, stats)
-        #return redirect("Tracker:home")
-        return redirect("Tracker:schoolsummary", message, school_id=school.id)
-    
+            message = generate_addschool_massage(school_name, parsed_data, stats)
+            request.session["accepto_message"] = message
+            return redirect("Tracker:schoolsummary", school_id=school.id)
+
+        # POST but Accepto's response didn't parse — bounce back to home.
+        return redirect("Tracker:home")
+
+    # GET — render the search form.
     return render(request, "Tracker/add_school.html")
 
+
 @login_required
-def schoolsummary(request, message, school_id):
-    school_info = Colleges.objects.filter(user = request.user, id=school_id).first()
-    if school_info is None or school_info == "":
+def schoolsummary(request, school_id):
+    school_info = Colleges.objects.filter(user=request.user, id=school_id).first()
+    if school_info is None:
         return redirect("Tracker:home")
+
+    message = request.session.pop("accepto_message", "")
+
+    today = date.today()
+    days_left = (school_info.deadline - today).days if school_info.deadline else None
 
     return render(request, "Tracker/schoolsummary.html", {
         "school": school_info,
-        "message": message
+        "days_left": days_left,
+        "message": message,
+        "plan_choices": ["EA", "ED", "ED1", "ED2", "REA", "Reg", "Rolling"],
+        "status_choices": Colleges.StatusOptions,
     })
 
 def college_search_api(request):
