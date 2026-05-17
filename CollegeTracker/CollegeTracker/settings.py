@@ -25,8 +25,8 @@ SECRET_KEY = 'django-insecure-x453*zl^^3ej39witbw9=(62d((uz##1-4z!wxm_cx=v66!0g8
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = [".onrender.com", "localhost", "127.0.0.1"]
-
+ALLOWED_HOSTS = [".onrender.com", "localhost", "127.0.0.1", "matchmap.io", "www.matchmap.io"]
+CSRF_TRUSTED_ORIGINS = ["https://matchmap.io", "https://www.matchmap.io", "https://college-tracker-rg72.onrender.com",]
 
 # Application definition
 
