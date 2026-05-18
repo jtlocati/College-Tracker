@@ -334,7 +334,9 @@ def Accepto_Reccomend(request):
 
     Stats = GetStats(request)
 
-    Schools = ping_ai(f"Given the following information I need you to generate a list of 10 reach, 10 match, and 5 safety schools for the person with the following profile, be honest, you are making serious career reccomendations, not making the person feel good/confident. i need you to put your responces in the format of: School1:reach/match/saftey,submission deadline(EA,ED,Reg,ect. Baised off of profile), major, school application url, likleyhood of admitance (percentage only (x%) no additional text);School2:reach/match/saftey,submission deadline(EA,ED,Reg,ect. Baised off of profile), major, school application url, likleyhood of admitance(percentage only (x%) no additional text);... DO NOT DEVIATE FROM THE FORMAT  Here are the stats: \
+    Schools = ping_ai(f"Given the following information I need you to generate a list of 10 reach, 10 match, and 5 safety schools for the person with the following profile, be honest, you are making serious career reccomendations, not making the person feel good/confident. i need you to put your responces in the format of: School1:reach/match/saftey,submission deadline(EA,ED,Reg,ect. Baised off of profile), major, school application url, likleyhood of admitance (percentage only (x%) no additional text);School2:reach/match/saftey,submission deadline(EA,ED,Reg,ect. Baised off of profile), major, school application url, likleyhood of admitance(percentage only (x%) no additional text);... \
+                      if the likleyhood is <30: reach, if the likleyhood is 30-75%: match, if the likleyhood is >75%: safety.\
+                      DO NOT DEVIATE FROM THE FORMAT  Here are the stats: \
                       {Stats}")
     
     parsed = split_college_data(Schools)
@@ -370,7 +372,9 @@ def AddSchool(request):
 
         Evaluate = ping_ai(f"I need you to evaluate this students chances of getting into {school_name}, I need you to be honest, you are not trying to give this person confidence or trying to make them feel better about the admissions process. \
                            Instead you are trying to give this person a proper insight to the school \
-                           I need you to format your responces in the format of: School1:reach/match/saftey,submission deadline(EA,ED,Reg,ect. Baised off of profile), major, school application url, likleyhood of admitance(percentage only (x%) no additional text) DO NOT DEVIATE FROM THE FORMAT \
+                           I need you to format your responces in the format of: School1:reach/match/saftey,submission deadline(EA,ED,Reg,ect. Baised off of profile), major, school application url, likleyhood of admitance(percentage only (x%) no additional text) \
+                           if the likleyhood is <30: reach, if the likleyhood is 30-75%: match, if the likleyhood is >75%: safety.\
+                           DO NOT DEVIATE FROM THE FORMAT \
                            here are the stats: {stats}")
         
         parsed_data = split_college_data(Evaluate)
@@ -461,7 +465,8 @@ def UpdateColleges(request):
         f"schools honestly given the new stats. Format EXACTLY as: "
         f"School1:reach/match/saftey,submission deadline(EA,ED,Reg,ect),major,"
         f"school application url,likleyhood of admitance;School2:...;... "
-        f"DO NOT DEVIATE FROM THE FORMAT.\n\n"
+        f"DO NOT DEVIATE FROM THE FORMAT"
+        f"if the likleyhood is <30: reach, if the likleyhood is 30-75%: match, if the likleyhood is >75%: safety.\n\n"
         f"Schools to re-evaluate: {school_names}\n\n"
         f"Updated stats:\n{stats}"
     )
