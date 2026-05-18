@@ -108,6 +108,8 @@ class userprofile(models.Model):
     pref_area = models.CharField(max_length=1000, blank=True)
     major = models.CharField(max_length=100, blank=True)
 
+    force_status = models.CharField(max_length=6000, blank=True, null=True)
+
     def __str__(self):
         return f"Profile for {self.user.username}"
 

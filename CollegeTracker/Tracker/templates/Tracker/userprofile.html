@@ -280,6 +280,14 @@
                     </div>
             </section>
 
+            <section class="profile-section">
+                <h3 clas="section-title">Advanced options</h3>
+                <div class="form-group">
+                    <label for="{{ form.force_status.id_for_label }}">Force college status (only applyed when editing pfp info)</label>
+                    {{ form.force_status }}
+                </div>
+            </section>
+
             <button type="submit" class="login-button profile-save">Save Profile</button>
         </form>
     </div>
